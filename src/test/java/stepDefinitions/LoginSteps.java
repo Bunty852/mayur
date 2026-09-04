@@ -8,6 +8,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.And;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.junit.Assert;
 
@@ -27,29 +28,53 @@ public class LoginSteps {
     @Given("User navigates to the login page")
     public void user_navigates_to_login_page() {
         driver.get("https://practicetestautomation.com/practice-test-login/");
+        
+        // Assertion 1: Verify the page title to ensure correct page is loaded
+        String actualTitle = driver.getTitle();
+        Assert.assertEquals("Page title mismatch!", "Test Login | Practice Test Automation", actualTitle);
     }
 
     @When("User enters username {string} and password {string}")
     public void user_enters_credentials(String username, String password) {
-        driver.findElement(By.id("username")).sendKeys(username);
-        driver.findElement(By.id("password")).sendKeys(password);
+        WebElement usernameField = driver.findElement(By.id("username"));
+        WebElement passwordField = driver.findElement(By.id("password"));
+        
+        usernameField.sendKeys(username);
+        passwordField.sendKeys(password);
+        
+        // Assertion 2: Verify the input fields correctly accepted the typed values
+        Assert.assertEquals("Username field value mismatch!", username, usernameField.getAttribute("value"));
+        Assert.assertEquals("Password field value mismatch!", password, passwordField.getAttribute("value"));
     }
 
     @And("User clicks the submit button")
     public void user_clicks_submit() {
-        driver.findElement(By.id("submit")).click();
+        WebElement submitButton = driver.findElement(By.id("submit"));
+        
+        // Assertion 3: Verify submit button is enabled before clicking
+        Assert.assertTrue("Submit button is not enabled!", submitButton.isEnabled());
+        submitButton.click();
     }
 
     @Then("User should be redirected to the success page containing {string}")
     public void verify_redirection(String expectedUrlFragment) {
         String currentUrl = driver.getCurrentUrl();
-        Assert.assertTrue("Redirection failed!", currentUrl.contains(expectedUrlFragment));
+        
+        // Assertion 4: Verify URL redirection contains the expected slug
+        Assert.assertTrue("URL redirection failed! Expected fragment: " + expectedUrlFragment + " but found: " + currentUrl, 
+                currentUrl.contains(expectedUrlFragment));
+        
+        // Assertion 5: Verify the success header text on the landing page
+        String successHeader = driver.findElement(By.tagName("h1")).getText();
+        Assert.assertEquals("Header text mismatch on success page!", "Logged In Successfully", successHeader);
     }
 
     @And("The logout button should be displayed")
     public void verify_logout_button() {
-        boolean isLogoutVisible = driver.findElement(By.linkText("Log out")).isDisplayed();
-        Assert.assertTrue("Logout button is missing", isLogoutVisible);
+        WebElement logoutButton = driver.findElement(By.linkText("Log out"));
+        
+        // Assertion 6: Verify logout button visibility
+        Assert.assertTrue("Logout button is not displayed on the screen!", logoutButton.isDisplayed());
     }
 
     @After
