@@ -67,6 +67,7 @@ public class LoginSteps {
         // Assertion 5: Verify the success header text on the landing page
         String successHeader = driver.findElement(By.tagName("h1")).getText();
         Assert.assertEquals("Header text mismatch on success page!", "Logged In Successfully", successHeader);
+        System.out.println("Rahul");
     }
 
     @And("The logout button should be displayed")
